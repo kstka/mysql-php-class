@@ -162,7 +162,7 @@
 		public function query($qry, $return = false){
 			$link =& self::connection();
 			self::set('last_query', $qry);
-			$result = mysql_query($query);
+			$result = mysql_query($qry);
 			if(is_resource($result)){
 				self::set('num_rows', mysql_num_rows($result));
 			}
