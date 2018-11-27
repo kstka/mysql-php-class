@@ -1,9 +1,9 @@
 <?php
 
-class Mysql {
+class MySQL {
 
   static private $link = null;
-  static private $info = array(
+  static private $info = array (
     'last_query' => null,
     'num_rows' => null,
     'insert_id' => null
@@ -14,13 +14,13 @@ class Mysql {
   static private $limit;
   static private $order;
 
-  function __construct($host, $user, $pass, $db){
-    self::$connection_info = array('host' => $host, 'user' => $user, 'pass' => $pass, 'db' => $db);
+  function __construct ($host, $db, $user, $pass) {
+    self::$connection_info = array('host' => $host, 'db' => $db, 'user' => $user, 'pass' => $pass);
     self::connection();
   }
 
   function __destruct(){
-    if(is_resource(self::$link)) mysqli_close(self::$link);
+    if (is_resource(self::$link)) mysqli_close(self::$link);
   }
 
   /**
@@ -29,7 +29,7 @@ class Mysql {
    * @param $value
    */
 
-  static private function set($field, $value){
+  static private function set ($field, $value) {
     self::$info[$field] = $value;
   }
 
@@ -37,15 +37,15 @@ class Mysql {
    * Getter methods
    */
 
-  public function last_query(){
+  public function last_query () {
     return self::$info['last_query'];
   }
 
-  public function num_rows(){
+  public function num_rows () {
     return self::$info['num_rows'];
   }
 
-  public function insert_id(){
+  public function insert_id () {
     return self::$info['insert_id'];
   }
 
@@ -53,13 +53,14 @@ class Mysql {
    * Create or return a connection to the MySQL server.
    */
 
-  static private function connection() {
-    if(!is_resource(self::$link) or empty(self::$link)){
-      if($link = mysqli_connect(self::$connection_info['host'], self::$connection_info['user'], self::$connection_info['pass'], self::$connection_info['db'])){
+  static private function connection () {
+    if (!is_resource(self::$link) or empty(self::$link)) {
+      if ($link = mysqli_connect(self::$connection_info['host'], self::$connection_info['user'], self::$connection_info['pass'], self::$connection_info['db'])) {
         self::$link = $link;
-        mysqli_set_charset(self::$link,'utf8');
-      }else{
-        throw new Exception('Could not connect to MySQL database.');
+        mysqli_set_charset (self::$link,'utf8');
+      }
+      else {
+        throw new Exception ('Could not connect to MySQL database.');
       }
     }
     return self::$link;
@@ -71,35 +72,38 @@ class Mysql {
    * @param string $type
    */
 
-  static private function __where($info, $type = 'AND'){
+  static private function __where ($info, $type = 'AND') {
     $where = self::$where;
-    foreach($info as $row => $value){
-      if(empty($where)){
-        $where = sprintf("WHERE `%s`='%s'", $row, mysqli_real_escape_string(self::$link,$value));
-      }else{
-        $where .= sprintf(" %s `%s`='%s'", $type, $row, mysqli_real_escape_string(self::$link,$value));
+    foreach ($info as $row => $value) {
+      if (empty($where)) {
+        $where = sprintf ("WHERE `%s`='%s'", $row, mysqli_real_escape_string(self::$link,$value));
+      }
+      else {
+        $where .= sprintf (" %s `%s`='%s'", $type, $row, mysqli_real_escape_string(self::$link,$value));
       }
     }
     self::$where = $where;
   }
 
-  public function where($field, $equal = null){
-    if(is_array($field)){
+  public function where ($field, $equal = null) {
+    if (is_array($field)) {
       self::__where($field);
-    }else{
+    }
+    else {
       self::__where(array($field => $equal));
     }
     return $this;
   }
 
-  public function and_where($field, $equal = null){
+  public function and_where ($field, $equal = null) {
     return $this->where($field, $equal);
   }
 
-  public function or_where($field, $equal = null){
-    if(is_array($field)){
+  public function or_where ($field, $equal = null) {
+    if (is_array($field)) {
       self::__where($field, 'OR');
-    }else{
+    }
+    else {
       self::__where(array($field => $equal), 'OR');
     }
     return $this;
@@ -109,7 +113,7 @@ class Mysql {
    * MySQL limit method
    */
 
-  public function limit($limit){
+  public function limit ($limit) {
     self::$limit = 'LIMIT '.$limit;
     return $this;
   }
@@ -121,24 +125,27 @@ class Mysql {
    * @return $this
    */
 
-  public function order_by($by, $order_type = 'DESC'){
+  public function order_by ($by, $order_type = 'DESC') {
     $order = self::$order;
-    if(is_array($by)){
-      foreach($by as $field => $type){
-        if(is_int($field) and !preg_match('/(DESC|desc|ASC|asc)/', $type)){
+    if (is_array($by)) {
+      foreach ($by as $field => $type) {
+        if (is_int($field) and !preg_match('/(DESC|desc|ASC|asc)/', $type)) {
           $field = $type;
           $type = $order_type;
         }
-        if(empty($order)){
+        if (empty($order)) {
           $order = sprintf("ORDER BY `%s` %s", $field, $type);
-        }else{
+        }
+        else {
           $order .= sprintf(", `%s` %s", $field, $type);
         }
       }
-    }else{
-      if(empty($order)){
+    }
+    else {
+      if (empty($order)) {
         $order = sprintf("ORDER BY `%s` %s", $by, $order_type);
-      }else{
+      }
+      else {
         $order .= sprintf(", `%s` %s", $by, $order_type);
       }
     }
@@ -150,11 +157,11 @@ class Mysql {
    * MySQL query helper
    */
 
-  static private function extra(){
+  static private function extra () {
     $extra = '';
-    if(!empty(self::$where)) $extra .= ' '.self::$where;
-    if(!empty(self::$order)) $extra .= ' '.self::$order;
-    if(!empty(self::$limit)) $extra .= ' '.self::$limit;
+    if (!empty(self::$where)) $extra .= ' '.self::$where;
+    if (!empty(self::$order)) $extra .= ' '.self::$order;
+    if (!empty(self::$limit)) $extra .= ' '.self::$limit;
     // cleanup
     self::$where = null;
     self::$order = null;
@@ -169,66 +176,71 @@ class Mysql {
    * @return array|bool
    */
 
-  public function query($qry, $return = false){
+  public function query ($qry, $return = false) {
     self::set('last_query', $qry);
-    $result = mysqli_query(self::$link,$qry);
-    if(is_resource($result)){
+    $result = mysqli_query (self::$link,$qry);
+    if (is_resource($result)){
       self::set('num_rows', mysqli_num_rows($result));
     }
-    if($return){
-      if(preg_match('/LIMIT 1/', $qry)){
+    if ($return) {
+      if (preg_match('/LIMIT 1/', $qry)) {
         $data = mysqli_fetch_assoc($result);
         mysqli_free_result($result);
         return $data;
-      }else{
+      }
+      else {
         $data = array();
-        while($row = mysqli_fetch_assoc($result)){
+        while ($row = mysqli_fetch_assoc($result)) {
           $data[] = $row;
         }
-        mysqli_free_result($result);
+        mysqli_free_result ($result);
         return $data;
       }
     }
     return true;
   }
 
-  public function get($table, $select = '*'){
-    if(is_array($select)){
+  public function get ($table, $select = '*') {
+    if (is_array($select)) {
       $cols = '';
-      foreach($select as $col){
+      foreach ($select as $col) {
         $cols .= "`{$col}`,";
       }
       $select = substr($cols, 0, -1);
     }
-    $sql = sprintf("SELECT %s FROM %s%s", $select, $table, self::extra());
+    $sql = sprintf ("SELECT %s FROM `%s%s`", $select, $table, self::extra());
     self::set('last_query', $sql);
-    if(!($result = mysqli_query(self::$link,$sql))){
-      throw new Exception('Error executing MySQL query: '.$sql.'. MySQL error '.mysqli_errno(self::$link).': '.mysqli_error(self::$link));
-      $data = false;
-    }elseif(is_resource($result)){
+    $result = mysqli_query(self::$link,$sql);
+
+    if ($result) {
       $num_rows = mysqli_num_rows($result);
       self::set('num_rows', $num_rows);
-      if($num_rows === 0){
+      if ($num_rows === 0) {
         $data = false;
-      }elseif(preg_match('/LIMIT 1/', $sql)){
+      }
+      elseif (preg_match('/LIMIT 1/', $sql)) {
         $data = mysqli_fetch_assoc($result);
-      }else{
+      }
+      else {
         $data = array();
-        while($row = mysqli_fetch_assoc($result)){
+        while($row = mysqli_fetch_assoc($result)) {
           $data[] = $row;
         }
       }
-    }else{
+    }
+    else {
+      throw new Exception('Error executing MySQL query: '.$sql.'. MySQL error '.mysqli_errno(self::$link).': '.mysqli_error(self::$link));
       $data = false;
     }
+
     mysqli_free_result($result);
     return $data;
   }
 
-  public function insert($table, $data){
+  public function insert ($table, $data){
     $fields = '';
     $values = '';
-    foreach($data as $col => $value){
+    foreach ($data as $col => $value) {
       $fields .= sprintf("`%s`,", $col);
       $values .= sprintf("'%s',", mysqli_real_escape_string(self::$link,$value));
     }
@@ -236,44 +248,48 @@ class Mysql {
     $values = substr($values, 0, -1);
     $sql = sprintf("INSERT INTO %s (%s) VALUES (%s)", $table, $fields, $values);
     self::set('last_query', $sql);
-    if(!mysqli_query(self::$link,$sql)){
+    if (!mysqli_query(self::$link,$sql)) {
       throw new Exception('Error executing MySQL query: '.$sql.'. MySQL error '.mysqli_errno(self::$link).': '.mysqli_error(self::$link));
-    }else{
+    }
+    else {
       self::set('insert_id', mysqli_insert_id(self::$link));
       return true;
     }
   }
 
-  public function update($table, $info){
-    if(empty(self::$where)){
+  public function update ($table, $info) {
+    if (empty(self::$where)){
       throw new Exception("Where is not set. Can't update whole table.");
-    }else{
-      $link =& self::connection();
+    }
+    else {
       $update = '';
-      foreach($info as $col => $value){
+      foreach ($info as $col => $value) {
         $update .= sprintf("`%s`='%s', ", $col, mysqli_real_escape_string(self::$link,$value));
       }
       $update = substr($update, 0, -2);
       $sql = sprintf("UPDATE %s SET %s%s", $table, $update, self::extra());
       self::set('last_query', $sql);
-      if(!mysqli_query(self::$link,$sql)){
+      if (!mysqli_query(self::$link,$sql)) {
         throw new Exception('Error executing MySQL query: '.$sql.'. MySQL error '.mysqli_errno(self::$link).': '.mysqli_error(self::$link));
-      }else{
+      }
+      else {
         return true;
       }
     }
   }
 
-  public function delete($table){
-    if(empty(self::$where)){
+  public function delete ($table) {
+    if (empty(self::$where)) {
       throw new Exception("Where is not set. Can't delete whole table.");
-    }else{
+    }
+    else {
       $link =& self::connection();
       $sql = sprintf("DELETE FROM %s%s", $table, self::extra());
       self::set('last_query', $sql);
-      if(!mysqli_query(self::$link,$sql)){
+      if (!mysqli_query(self::$link,$sql)) {
         throw new Exception('Error executing MySQL query: '.$sql.'. MySQL error '.mysqli_errno(self::$link).': '.mysqli_error(self::$link));
-      }else{
+      }
+      else {
         return true;
       }
     }
