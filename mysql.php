@@ -2,6 +2,9 @@
 
 class MySQL {
 
+  // Forked from https://gist.github.com/mloberg/1181537
+  // By Matthew Loberg https://github.com/mloberg
+
   static private $link = null;
   static private $info = array (
     'last_query' => null,
