@@ -1,7 +1,7 @@
 # mysql-php-class
 MySQL PHP Class (MySQLi support)
 
-Forked from https://gist.github.com/mloberg/1181537
+Forked from [mloberg/mysql.php](https://gist.github.com/mloberg/1181537) by [Matthew Loberg](https://github.com/mloberg)
 
 # Usage
 
