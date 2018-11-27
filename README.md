@@ -63,7 +63,7 @@ catch(Exception $e) {
 
 // insert post
 try {
-  $mysql->insert('posts', array('title' => 'New Title', 'content' => 'post content', 'author' => 'Matthew Loberg'));
+  $mysql->insert('posts', array('title' => 'Title', 'content' => 'post content', 'author' => 'Matthew Loberg'));
   echo $mysql->insert_id(); // id of newly inserted post
 }
 catch(Exception $e) {
