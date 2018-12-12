@@ -182,7 +182,7 @@ class MySQL {
   public function query ($qry, $return = false) {
     self::set('last_query', $qry);
     $result = mysqli_query (self::$link,$qry);
-    if (is_resource($result)){
+    if ($result) {
       self::set('num_rows', mysqli_num_rows($result));
     }
     if ($return) {
@@ -211,7 +211,7 @@ class MySQL {
       }
       $select = substr($cols, 0, -1);
     }
-    $sql = sprintf ("SELECT %s FROM `%s%s`", $select, $table, self::extra());
+    $sql = sprintf ("SELECT %s FROM %s%s", $select, $table, self::extra());
     self::set('last_query', $sql);
     $result = mysqli_query(self::$link,$sql);
 
